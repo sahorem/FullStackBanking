@@ -2,9 +2,11 @@
 // In the Firebase console, open Settings > Service Accounts.
 // Click Generate New Private Key, then confirm by clicking Generate Key.
 // Securely store the JSON file containing the key.
-const firebaseServerAuth = require('firebase-admin');
 
 // firebase service account private key
+/*
+const firebaseServerAuth = require('firebase-admin');
+
 const type = 'service_account';
 const project_id = 'test-ffe82';
 const private_key_id = '4ce48b742772f8a004491abb13dcea19c4f256e2';
@@ -34,6 +36,16 @@ firebaseServerAuth.initializeApp({
 		auth_provider_x509_cert_url,
 		client_x509_cert_url,
 	}),
+});
+
+*/
+
+const firebaseServerAuth = require('firebase-admin');
+
+var serviceAccount = require('./badbankServiceAccountKey.json');
+
+firebaseServerAuth.initializeApp({
+	credential: firebaseServerAuth.credential.cert(serviceAccount),
 });
 
 module.exports = firebaseServerAuth;

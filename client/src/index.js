@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Home } from './home.js';
@@ -18,7 +18,7 @@ function Spa() {
 	const customHistory = createBrowserHistory();
 	const toggleBar = (status) => {
 		//logged === true ? setLogged(false) : setLogged(true);
-		//customHistory.push(`/Home`);
+		customHistory.push(`/Home`);
 		//status ? customHistory.push(`/Deposit`) : customHistory.push(`/Login`);
 		setLogged(status);
 		(async () => {
@@ -68,12 +68,16 @@ function Spa() {
 						</Nav>
 					</Navbar.Collapse>
 				</Navbar>
-				<Route path='/Deposit' component={Money}></Route>
-				<Route exact path='/Withdraw' component={Money}></Route>
-				<Route exact path='/ClientList' component={AllClients}></Route>
-				<Route exact path='/ClientSummary' component={ClientSummary}></Route>
-				<Route path='/Logout' component={Logout}></Route>
-				<Route exact path='/Home' component={Home}></Route>
+				<Switch>
+					<Route path='/Deposit' component={Money}></Route>
+					<Route exact path='/Withdraw' component={Money}></Route>
+					<Route exact path='/ClientList' component={AllClients}></Route>
+					<Route exact path='/ClientSummary' component={ClientSummary}></Route>
+					<Route path='/Logout' component={Logout}></Route>
+					<Route path='/Home' component={Home}></Route>
+					<Route exact path='/' component={Home}></Route>
+					<Route component={Home} />
+				</Switch>
 			</UserContext.Provider>
 		</Router>
 	) : (
@@ -103,9 +107,13 @@ function Spa() {
 						</Nav>
 					</Navbar.Collapse>
 				</Navbar>
-				<Route path='/Login' component={Login}></Route>
-				<Route path='/CreateAccount' component={CreateAccount}></Route>
-				<Route exact path='/Home' component={Home}></Route>
+				<Switch>
+					<Route path='/Login' component={Login}></Route>
+					<Route path='/CreateAccount' component={CreateAccount}></Route>
+					<Route path='/Home' component={Home}></Route>
+					<Route exact path='/' component={Home}></Route>
+					<Route component={Home} />
+				</Switch>
 			</UserContext.Provider>
 		</Router>
 	);

@@ -7,10 +7,9 @@ function Money(props) {
 	const ctx = React.useContext(UserContext);
 	const [show, setShow] = React.useState(true);
 	const [status, setStatus] = React.useState('');
-	const [xtype, setXtype] = React.useState(txntype);
-	const [name, setName] = React.useState(ctx.currentuser.name);
 	const [balance, setBalance] = React.useState(ctx.currentuser.closebalance);
 	const [amount, setAmount] = React.useState(0);
+	const name = ctx.currentuser.name;
 
 	const validateTxn = (amount) => {
 		if (!amount) {
@@ -91,13 +90,13 @@ function Money(props) {
 	};
 
 	const clearForm = () => {
-		setAmount('');
+		setAmount(0);
 		setStatus('');
 		setShow(true);
 	};
 	const params = {
 		name: name,
-		txntype: xtype,
+		txntype: txntype,
 		balance: balance,
 		amount: amount,
 		validate: validateTxn,

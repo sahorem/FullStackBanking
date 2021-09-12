@@ -34,7 +34,6 @@ async function run() {
 		// add a test client
 		var name = 'testuser';
 		var email = name + '@mit.edu';
-		var passwd = 'Testuser123!';
 		var openbalance = getRandomIntInclusive(100, 1000);
 		var closebalance = openbalance - 100;
 
@@ -49,7 +48,6 @@ async function run() {
 			var doc = {
 				clientname: name,
 				clientemail: email,
-				clientpasswd: passwd,
 				openingbalance: openbalance,
 				closingbalance: closebalance,
 			};

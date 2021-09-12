@@ -49,6 +49,10 @@ function Login(props) {
 							method: 'GET',
 							headers: myHeaders,
 						});
+						if (Number(res.status) >= 400) {
+							setStatus('Server Error : ' + res.statusText);
+							return;
+						}
 
 						let data = await res.json();
 						console.log(data);
@@ -71,8 +75,7 @@ function Login(props) {
 								props.location.toggleBar(true);
 							}
 						} else {
-							setStatus('client details not found.');
-							setStatus('Login Failed');
+							setStatus('client details not found. Login Failed');
 							setTimeout(() => setStatus(''), 6000);
 						}
 					})();
@@ -120,8 +123,8 @@ function Login(props) {
 		signInWithPopup(firebaseClientAuth, gprovider)
 			.then((result) => {
 				// This gives a Google Access Token. we can use it to access the Google API.
-				const credential = GoogleAuthProvider.credentialFromResult(result);
-				const token = credential.accessToken;
+				//const credential = GoogleAuthProvider.credentialFromResult(result);
+				//const token = credential.accessToken;
 				// The signed-in user info.
 				console.log(
 					`You are logged in using the following email:
