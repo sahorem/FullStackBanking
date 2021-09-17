@@ -1,41 +1,15 @@
-const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017';
-let db = null;
-
-// function to generate random number for opening balance
-function getRandomIntInclusive(min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
-	return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
-}
-
-// Function to generate current date time
-function getCurrentDT() {
-	var today = new Date();
-	var date =
-		today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-	var time =
-		today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
-	return date + ' ' + time;
-}
-// connect to mongo
-MongoClient.connect(url, { useUnifiedTopology: true }, function (err, client) {
-	console.log('Connected successfully to db server');
-
-	// connect to myproject database
-	db = client.db('myproject');
-});
+const utils = require('./utils.js');
 
 // create client account
-function createClient(name, email, password) {
-	const openbalance = getRandomIntInclusive(100, 1000);
+function createClient(db, name, email) {
+	if (utils.DEBUG) console.log('in create client', name, email);
+	const openbalance = utils.getRandomIntInclusive(200, 1000);
 	const closebalance = openbalance;
 	return new Promise((resolve, reject) => {
 		const collection = db.collection('clients');
 		const doc = {
 			clientname: name,
 			clientemail: email,
-			clientpasswd: password,
 			openingbalance: openbalance,
 			closingbalance: closebalance,
 		};
@@ -47,7 +21,7 @@ function createClient(name, email, password) {
 }
 
 // find client accounts
-function findClient(email) {
+function findClient(db, email) {
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('clients')
@@ -59,7 +33,8 @@ function findClient(email) {
 }
 
 // find client account
-function findClientOne(email) {
+function findClientOne(db, email) {
+	if (utils.DEBUG) console.log('in findClientOne ', email);
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('clients')
@@ -70,13 +45,13 @@ function findClientOne(email) {
 }
 
 // update - deposit/withdraw amount
-function updateClient(email, amount) {
+function updateClient(db, email, amount) {
 	// First insert the record in transactions collection
 	(async () => {
 		const collection = db.collection('transactions');
 		const doc = {
 			clientemail: email,
-			txndate: getCurrentDT(),
+			txndate: utils.getCurrentDT(),
 			txnamount: amount,
 		};
 
@@ -104,7 +79,7 @@ function updateClient(email, amount) {
 }
 
 // all clients
-function allClients() {
+function allClients(db) {
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('clients')
@@ -116,7 +91,7 @@ function allClients() {
 }
 
 // find transactions for a client
-function allClientTxn(email) {
+function allClientTxn(db, email) {
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('transactions')
@@ -129,8 +104,8 @@ function allClientTxn(email) {
 
 module.exports = {
 	createClient,
-	findClientOne,
 	findClient,
+	findClientOne,
 	updateClient,
 	allClients,
 	allClientTxn,

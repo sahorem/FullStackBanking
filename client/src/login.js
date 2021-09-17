@@ -183,6 +183,7 @@ function Login(props) {
 						<br />
 						<button
 							type='submit'
+							name='login'
 							className='btn btn-light'
 							style={{ backgroundColor: '#80ced6' }}
 							onClick={emailLogin}>

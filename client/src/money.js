@@ -41,7 +41,7 @@ function Money(props) {
 			txnamt = -1 * amount;
 			txnmsg = 'Amount has been withdrawn successfully, new closing balance: ';
 		}
-		const url = `/client/update/${ctx.currentuser.email}/${txnamt}`;
+		const url = '/client/update/';
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
 		if (ctx.firebaseuser) {
@@ -49,14 +49,21 @@ function Money(props) {
 				.getIdToken()
 				.then((idToken) => {
 					(async () => {
-						const myHeaders = new Headers({
+						/*const myHeaders = new Headers({
 							'Content-Type': 'application/json',
 							Authorization: idToken,
-						});
+						}); */
 
 						let res = await fetch(url, {
-							method: 'GET',
-							headers: myHeaders,
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json;charset=utf-8',
+								Authorization: idToken,
+							},
+							body: JSON.stringify({
+								email: ctx.currentuser.email,
+								amount: txnamt,
+							}),
 						});
 
 						let data = await res.json();

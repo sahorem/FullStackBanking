@@ -42,6 +42,7 @@ function CreateAccount(props) {
 				$/
 			*/
 			if (!regpswd.test(field)) {
+				console.log('Bad Password ', field);
 				setStatus(
 					'Password Format Error: Must contain One upper case, One lower case, one number, one special character and must be eight characeters or longer'
 				);
@@ -63,7 +64,7 @@ function CreateAccount(props) {
 
 	// Create client account in backend (mongodb)
 	function createClient(email, name) {
-		const url = `/client/create/${name}/${email}/`;
+		const url = '/client/create/';
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
 		if (firebaseClientAuth.currentUser) {
@@ -71,15 +72,18 @@ function CreateAccount(props) {
 				.getIdToken()
 				.then((idToken) => {
 					(async () => {
-						const myHeaders = new Headers({
-							'Content-Type': 'application/json',
-							Authorization: idToken,
+						let res = await fetch(url, {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json;charset=utf-8',
+								Authorization: idToken,
+							},
+							body: JSON.stringify({
+								name: name,
+								email: email,
+							}),
 						});
 
-						let res = await fetch(url, {
-							method: 'GET',
-							headers: myHeaders,
-						});
 						if (Number(res.status) >= 400) {
 							setStatus('Server Error : ' + res.statusText);
 							return;
@@ -122,7 +126,8 @@ function CreateAccount(props) {
 
 	// Create email based account for firebase
 	function signupEmail() {
-		console.log(name, email, password);
+		console.log(name, ',', email, ',', password);
+
 		if (!validate(name, 'name')) return;
 		if (!validate(email, 'email')) return;
 		if (!validate(password, 'password')) return;

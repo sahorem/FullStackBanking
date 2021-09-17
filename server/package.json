@@ -2,9 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "description": "server for the banking application",
-  "main": "index.js",
+  "main": "start_server.js",
   "scripts": {
-    "test": "jest"
+    "start": "node start_server.js",
+    "test": "jest --detectOpenHandles  --coverage --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "Mahesh.Sahore@gmail.com",
@@ -12,9 +16,18 @@
   "dependencies": {
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "faker": "^5.5.3",
     "firebase": "^9.0.1",
     "firebase-admin": "^9.11.1",
-    "lowdb": "^1.0.0",
-    "mongodb": "^3.6.2"
+    "jest": "^27.1.1",
+    "mongodb": "^3.6.2",
+    "supertest": "^6.1.6"
+  },
+  "devDependencies": {
+    "faker": "^5.5.3",
+    "flush-promises": "^1.0.2",
+    "jest": "^27.1.1",
+    "mongodb-memory-server-global": "^7.4.0",
+    "supertest": "^6.1.6"
   }
 }

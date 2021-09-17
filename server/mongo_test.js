@@ -25,7 +25,7 @@ async function run() {
 		await dbclient.connect();
 
 		// database Name
-		const dbName = 'myproject';
+		const dbName = 'badbank';
 		const db = dbclient.db(dbName);
 
 		// insert into clients collection
