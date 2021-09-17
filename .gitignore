@@ -16,6 +16,9 @@
 # Git ignore 
 .gitignore 
 
+# Firebase Auth Key 
+./server/badbankServiceAccountKey.js
+
 # misc
 .DS_Store
 .env.local
