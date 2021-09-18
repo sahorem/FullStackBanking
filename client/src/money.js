@@ -80,7 +80,7 @@ function Money(props) {
 								};
 								setBalance(data.value.closingbalance);
 								setStatus(txnmsg + data.value.closingbalance);
-								setTimeout(() => setStatus(''), 6000);
+								setTimeout(() => setStatus(''), 3000);
 								setShow(false);
 							}
 						} else {

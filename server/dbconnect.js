@@ -1,25 +1,25 @@
 const MongoClient = require('mongodb').MongoClient;
-const { MongoMemoryServer } = require('mongodb-memory-server-global');
-let dbURL = 'mongodb://localhost:27017';
 const utils = require('./utils.js');
 
-const dbname = 'badbank';
+const DBNAME = process.env.DBNAME || 'badbank';
+let DBURL = process.env.DBURL || 'mongodb://localhost:27017';
+
 let DBConnection = null;
 let mongoConnection = null;
 
 // connect to mongo
 function dbConnect() {
-	if (utils.DEBUG) console.log('Connecting to DB ', dbURL);
+	if (utils.DEBUG) console.log('Connecting to DB ', DBURL);
 	return new Promise((resolve, reject) => {
 		try {
 			MongoClient.connect(
-				dbURL,
+				DBURL,
 				{ useUnifiedTopology: true },
 				function (err, client) {
 					mongoConnection = client;
 
-					console.log('Connected successfully to DB server', dbURL);
-					DBConnection = client.db(dbname);
+					console.log('Connected successfully to DB server', DBURL);
+					DBConnection = client.db(DBNAME);
 					resolve(DBConnection);
 				}
 			);
