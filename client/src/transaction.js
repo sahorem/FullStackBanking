@@ -1,16 +1,21 @@
 import React from 'react';
 import { Card } from './card.js';
+import { AccountType } from './accounttype.js';
 
 const Transaction = (props) => {
 	let {
 		name,
 		txntype,
-		balance,
+		cbalance,
+		sbalance,
 		amount,
 		validate,
 		txnSubmit,
 		status,
 		show,
+		acttype,
+		actlist,
+		setAcctType,
 		clearForm,
 	} = props.params;
 
@@ -43,6 +48,11 @@ const Transaction = (props) => {
 		setBtndisabled(true);
 		clearForm();
 	};
+	const params = {
+		actlist: actlist,
+		acttype: acttype,
+		actChange: setAcctType,
+	};
 
 	return (
 		<Card
@@ -52,7 +62,12 @@ const Transaction = (props) => {
 			body={
 				show ? (
 					<>
-						<p>Current Balance : {balance} </p>
+						<p>Current checking Balance : {cbalance} </p>
+						<p>Current savings Balance : {sbalance} </p>
+						<br />
+						<div className='acttype'>
+							<AccountType params={params}></AccountType>
+						</div>
 						<br />
 						{txninfo} <br />
 						<input

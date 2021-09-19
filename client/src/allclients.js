@@ -20,8 +20,8 @@ function AllClients() {
 		const url = `/client/all`;
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
-		if (ctx.firebaseuser) {
-			ctx.firebaseuser
+		if (ctx.currentuser.firebaseuser) {
+			ctx.currentuser.firebaseuser
 				.getIdToken()
 				.then((idToken) => {
 					(async () => {
@@ -66,6 +66,10 @@ function AllClients() {
 		{
 			dataField: 'clientemail',
 			text: 'Email',
+		},
+		{
+			dataField: 'accounttype',
+			text: 'Account Type',
 		},
 		{
 			dataField: 'openingbalance',
@@ -120,7 +124,7 @@ function AllClients() {
 	};
 	return (
 		<div>
-			<h2 style={h2style}>Full List of Clients</h2>
+			<h3 style={h2style}>Full List of Clients</h3>
 			<PaginationProvider pagination={paginationFactory(options)}>
 				{contentTable}
 			</PaginationProvider>

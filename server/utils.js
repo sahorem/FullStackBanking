@@ -1,4 +1,4 @@
-const DEBUG = process.env.DEBUG || false;
+const DEBUG = process.env.DEBUG || true;
 
 // function to generate random number for opening balance
 function getRandomIntInclusive(min, max) {

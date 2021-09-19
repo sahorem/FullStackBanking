@@ -1,22 +1,30 @@
+const { AccountType } = require('../client/src/accounttype.js');
 const utils = require('./utils.js');
 
 // create client account
-function createClient(db, name, email) {
+function createClient(db, name, email, acttype) {
 	if (utils.DEBUG) console.log('in create client', name, email);
 	const openbalance = utils.getRandomIntInclusive(200, 1000);
 	const closebalance = openbalance;
 	return new Promise((resolve, reject) => {
-		const collection = db.collection('clients');
-		const doc = {
-			clientname: name,
-			clientemail: email,
-			openingbalance: openbalance,
-			closingbalance: closebalance,
-		};
+		let actlist = acttype == 'both' ? ['checking', 'savings'] : [acttype];
+		let doclist = [];
+		for (let i = 0; i < actlist.length; i++) {
+			doclist[i] = {
+				clientname: name,
+				clientemail: email,
+				accounttype: actlist[i],
+				openingbalance: openbalance,
+				closingbalance: closebalance,
+			};
+		}
 
-		collection.insertOne(doc, { w: 1 }, function (err, result) {
-			err ? reject(err) : resolve(doc);
-		});
+		const collection = db.collection('clients');
+		if (doclist) {
+			collection.insert(doclist, { w: 1 }, function (err, result) {
+				err ? reject(err) : resolve(doclist);
+			});
+		}
 	});
 }
 
@@ -45,12 +53,13 @@ function findClientOne(db, email) {
 }
 
 // update - deposit/withdraw amount
-function updateClient(db, email, amount) {
+function updateClient(db, email, acttype, amount) {
 	// First insert the record in transactions collection
 	(async () => {
 		const collection = db.collection('transactions');
 		const doc = {
 			clientemail: email,
+			accounttype: acttype,
 			txndate: utils.getCurrentDT(),
 			txnamount: amount,
 		};
@@ -67,7 +76,7 @@ function updateClient(db, email, amount) {
 		const customers = db
 			.collection('clients')
 			.findOneAndUpdate(
-				{ clientemail: email },
+				{ clientemail: email, accounttype: acttype },
 				{ $inc: { closingbalance: amount } },
 				{ returnOriginal: false },
 				function (err, documents) {

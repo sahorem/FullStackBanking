@@ -1,7 +1,9 @@
 import React from 'react';
 import { Card } from './card.js';
-import { UserContext } from './context.js';
+import { UserContext, setUserContext } from './context.js';
 import { firebaseClientAuth } from './auth_client.js';
+import { AccountType } from './accounttype.js';
+
 import {
 	signInWithPopup,
 	GoogleAuthProvider,
@@ -12,9 +14,11 @@ function CreateAccount(props) {
 	const [show, setShow] = React.useState(true);
 	const [status, setStatus] = React.useState('');
 	const [name, setName] = React.useState('');
+	const [acttype, setAcctType] = React.useState('both');
 	const [email, setEmail] = React.useState('');
 	const [password, setPassword] = React.useState('');
 	const ctx = React.useContext(UserContext);
+	const MemoizedAccountType = React.memo(AccountType);
 
 	//if user is logged in, it persists through refreshes, this eliminates that issue
 	firebaseClientAuth.signOut();
@@ -81,6 +85,7 @@ function CreateAccount(props) {
 							body: JSON.stringify({
 								name: name,
 								email: email,
+								acttype: acttype,
 							}),
 						});
 
@@ -99,13 +104,17 @@ function CreateAccount(props) {
 									'Account Successfully Created with opening balance of ' +
 										data.openingbalance
 								);
+								console.log(ctx);
+								setUserContext(firebaseClientAuth, data);
+								/*
 								ctx.currentuser = {
 									name,
 									email,
 									openbalance: data.openingbalance,
 									closebalance: data.closingbalance,
 								};
-								ctx.firebaseuser = firebaseClientAuth.currentUser;
+								ctx.firebaseuser = firebaseClientAuth.currentUser; */
+								console.log(ctx);
 								props.location.toggleBar(true);
 								setShow(false);
 							}
@@ -209,6 +218,11 @@ function CreateAccount(props) {
 		setShow(true);
 	}
 
+	const params = {
+		actlist: 'checking#savings#both#',
+		acttype: acttype,
+		actChange: setAcctType,
+	};
 	return (
 		<Card
 			bgcolor='primary'
@@ -247,17 +261,21 @@ function CreateAccount(props) {
 							onChange={(e) => setPassword(e.currentTarget.value)}
 						/>
 						<br />
+						<div className='acttype'>
+							<MemoizedAccountType params={params}></MemoizedAccountType>
+						</div>
+						<br />
 						<button
 							type='submit'
 							className='btn btn-light'
-							style={{ backgroundColor: '#80ced6' }}
+							style={{ margin: '7px', backgroundColor: '#80ced6' }}
 							onClick={signupEmail}>
 							Sign-Up
 						</button>
 						<button
 							type='Google Signup'
 							className='btn btn-light'
-							style={{ backgroundColor: '#fefbd8' }}
+							style={{ margin: '7px', backgroundColor: '#fefbd8' }}
 							onClick={signupGoogle}>
 							Google Sign-Up
 						</button>

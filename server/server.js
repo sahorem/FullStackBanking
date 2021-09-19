@@ -64,12 +64,12 @@ app.get('/', function (req, res) {
 	res.status(200).json({ title: 'Badbank Service' });
 });
 
-// find one client by email - alternative to find
-app.get('/client/findOne/:email', function (req, res) {
+// find client by email
+app.get('/client/find/:email', function (req, res) {
 	const { db, body } = req;
 	if (utils.DEBUG) console.log(req.params.email);
 	dal
-		.findClientOne(db, req.params.email)
+		.findClient(db, req.params.email)
 		.then((client) => {
 			if (utils.DEBUG) console.log('client', client);
 			if (client) {
@@ -128,6 +128,7 @@ app.post('/client/create', function (req, res) {
 	const { db, body } = req;
 	if (utils.DEBUG) console.log('client create', body.name);
 	if (utils.DEBUG) console.log('client create', body.email);
+	if (utils.DEBUG) console.log('client create', body.acttype);
 
 	// check if client exists
 	dal
@@ -140,10 +141,12 @@ app.post('/client/create', function (req, res) {
 			} else {
 				// else create client account
 				//console.log('Creating client');
-				dal.createClient(db, body.name, body.email).then((client) => {
-					if (utils.DEBUG) console.log('client account created ', client);
-					res.send(client);
-				});
+				dal
+					.createClient(db, body.name, body.email, body.acttype)
+					.then((client) => {
+						if (utils.DEBUG) console.log('client account created ', client);
+						res.send(client);
+					});
 			}
 		})
 		.catch((err) => {
@@ -155,7 +158,7 @@ app.post('/client/create', function (req, res) {
 app.post('/client/update/', function (req, res) {
 	const { db, body } = req;
 	dal
-		.updateClient(db, body.email, Number(body.amount))
+		.updateClient(db, body.email, body.acttype, Number(body.amount))
 		.then((response) => {
 			if (utils.DEBUG) console.log('updated client record', response);
 			res.send(response);

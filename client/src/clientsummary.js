@@ -14,18 +14,26 @@ function ClientSummary() {
 	const [data, setData] = React.useState([]);
 	const ctx = React.useContext(UserContext);
 	const [status, setStatus] = React.useState('');
-	const email = React.useContext(UserContext).currentuser.email;
-	const name = React.useContext(UserContext).currentuser.name;
-	const obalance = React.useContext(UserContext).currentuser.openbalance;
-	const cbalance = React.useContext(UserContext).currentuser.closebalance;
+	const email = ctx.currentuser.email;
+	const name = ctx.currentuser.name;
+	let [cobalance, ccbalance, sobalance, scbalance] = [0, 0, 0, 0];
+	for (let i = 0; i < ctx.currentuser.accounts.length; i++) {
+		if (ctx.currentuser.accounts[i].accounttype === 'checking') {
+			cobalance = ctx.currentuser.accounts[i].openbalance;
+			ccbalance = ctx.currentuser.accounts[i].closebalance;
+		} else {
+			sobalance = ctx.currentuser.accounts[i].openbalance;
+			scbalance = ctx.currentuser.accounts[i].closebalance;
+		}
+	}
 
 	const txnData = () => {
 		// fetch all accounts from API
 		const url = `/client/transactions/${email}`;
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
-		if (ctx.firebaseuser) {
-			ctx.firebaseuser
+		if (ctx.currentuser.firebaseuser) {
+			ctx.currentuser.firebaseuser
 				.getIdToken()
 				.then((idToken) => {
 					(async () => {
@@ -63,6 +71,10 @@ function ClientSummary() {
 	};
 	const { SearchBar } = Search;
 	const columns = [
+		{
+			dataField: 'accounttype',
+			text: 'Account Type',
+		},
 		{
 			dataField: 'txndate',
 			text: 'Transaction Date',
@@ -116,10 +128,15 @@ function ClientSummary() {
 	};
 	return (
 		<div>
-			<h2 style={hstyle}>Transaction Summary Report For {name}</h2>
-			<h4 style={hstyle}>
-				Opening Balance: {obalance} - Closing Balance: {cbalance}
-			</h4>
+			<h3 style={hstyle}>Transaction Summary Report For {name}</h3>
+			<h6 style={hstyle}>
+				Checking Account - Opening Balance: {cobalance} - Closing Balance:
+				{ccbalance}
+			</h6>
+			<h6 style={hstyle}>
+				Savings Account - Opening Balance: {sobalance} - Closing Balance:
+				{scbalance}
+			</h6>
 			<PaginationProvider pagination={paginationFactory(options)}>
 				{contentTable}
 			</PaginationProvider>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from './card.js';
-import { UserContext } from './context.js';
+import { UserContext, setUserContext } from './context.js';
 import { firebaseClientAuth } from './auth_client.js';
 
 import {
@@ -14,7 +14,6 @@ function Login(props) {
 	const [status, setStatus] = React.useState('');
 	const [email, setEmail] = React.useState('');
 	const [password, setPassword] = React.useState('');
-	const ctx = React.useContext(UserContext);
 
 	//if user is logged in, it persists through refreshes, this eliminates that issue
 	firebaseClientAuth.signOut();
@@ -31,7 +30,7 @@ function Login(props) {
 	}
 	// Get the client details from backend mongo db
 	function getClientInfo(email) {
-		const url = `/client/findOne/${email}`;
+		const url = `/client/find/${email}`;
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
 		if (firebaseClientAuth.currentUser) {
@@ -62,13 +61,15 @@ function Login(props) {
 								setStatus('Client Details  :' + data.error);
 							} else {
 								// now set the current context to point to the logged user
+								setUserContext(firebaseClientAuth.currentUser, data);
+								/*
 								ctx.currentuser = {
 									name: data.clientname,
 									email,
 									openbalance: data.openingbalance,
 									closebalance: data.closingbalance,
 								};
-								ctx.firebaseuser = firebaseClientAuth.currentUser;
+								ctx.firebaseuser = firebaseClientAuth.currentUser; */
 								setStatus('Successfully Logged in');
 								setShow(false);
 								setTimeout(() => setStatus(''), 6000);
@@ -185,14 +186,14 @@ function Login(props) {
 							type='submit'
 							name='login'
 							className='btn btn-light'
-							style={{ backgroundColor: '#80ced6' }}
+							style={{ margin: '7px', backgroundColor: '#80ced6' }}
 							onClick={emailLogin}>
 							Login
 						</button>
 						<button
 							type='submit'
 							className='btn btn-light'
-							style={{ backgroundColor: '#fefbd8' }} //#92a8d1
+							style={{ margin: '7px', backgroundColor: '#fefbd8' }} //#92a8d1
 							onClick={googleLogin}>
 							Google Login
 						</button>
