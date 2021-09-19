@@ -9,16 +9,14 @@ function Money(props) {
 	const [acttype, setAcctType] = React.useState('');
 	const [cbalance, setCbalance] = React.useState(0);
 	const [sbalance, setSbalance] = React.useState(0);
-	let amount = 0;
-	let acctlist = [];
-
+	const [amount, setAmount] = React.useState(0);
 	const ctx = React.useContext(UserContext);
 	const name = ctx.currentuser.name;
+	const acctlist = ctx.currentuser.acctlist;
 
 	// Similar to componentDidMount and componentDidUpdate:
 	React.useEffect(() => {
 		for (let i = 0; i < ctx.currentuser.accounts.length; i++) {
-			acctlist[i] = ctx.currentuser.accounts[i].accounttype + '#';
 			if (ctx.currentuser.accounts[i].accounttype === 'checking') {
 				setAcctType('checking');
 				setCbalance(ctx.currentuser.accounts[i].closebalance);
@@ -27,7 +25,7 @@ function Money(props) {
 				setSbalance(ctx.currentuser.accounts[i].closebalance);
 			}
 		}
-	}, []); // Empty arrary to ensure this is done only at the mount time , not again
+	}, [ctx.currentuser.accounts]); // Empty arrary to ensure this is done only at the mount time , not again
 
 	const validateTxn = (amt) => {
 		if (!amt) {
@@ -42,14 +40,14 @@ function Money(props) {
 				return false;
 			}
 		}
-		amount = amt;
+		setAmount(amt);
 		return true;
 	};
 
 	const handleTxn = () => {
 		if (!validateTxn(amount)) return;
 		let txnamt = amount;
-
+		let txnmsg = 'Amount has been deposited successfully,new closing balance: ';
 		if (txntype === 'Withdraw') {
 			// withdraw
 			if (acttype === 'checking') {
@@ -67,7 +65,7 @@ function Money(props) {
 			txnamt = -1 * amount;
 			txnmsg = 'Amount has been withdrawn successfully, new closing balance: ';
 		}
-		let txnmsg = 'Amount has been deposited successfully,new closing balance: ';
+
 		const url = '/client/update/';
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
@@ -129,7 +127,7 @@ function Money(props) {
 	};
 
 	const clearForm = () => {
-		amount = 0;
+		setAmount(0);
 		setStatus('');
 		setShow(true);
 	};

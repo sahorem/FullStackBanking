@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from './card.js';
-import { UserContext, setUserContext } from './context.js';
+import { setUserContext } from './context.js';
 import { firebaseClientAuth } from './auth_client.js';
 
 import {
@@ -54,7 +54,7 @@ function Login(props) {
 						}
 
 						let data = await res.json();
-						console.log(data);
+						//console.log(data);
 						if (data) {
 							if (data.error) {
 								// Client not in backend database

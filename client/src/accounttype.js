@@ -5,9 +5,9 @@ function AccountType(props) {
 
 	let rstyle = {
 		textAlign: 'right',
-		margin: '7px',
-		width: '1.2em',
-		height: '1.2em',
+		margin: '9px',
+		width: '1em',
+		height: '1em',
 		fontSize: '1.2em',
 	};
 
@@ -29,9 +29,7 @@ function AccountType(props) {
 				type='radio'
 				checked={acttype === rtype}
 				onChange={(e) => {
-					let revent = e;
-					console.log(e);
-					handleChange(e);
+					triggerChange(e);
 				}}
 			/>
 		);
@@ -45,21 +43,21 @@ function AccountType(props) {
 	) : actlist === 'savings#' ? (
 		<div className='radio-savings'>
 			Savings
-			<Rbuttons params={{ rtype: 'saving', triggerChange: handleChange }} />
+			<Rbuttons params={{ rtype: 'savings', triggerChange: handleChange }} />
 		</div>
 	) : actlist === 'checking#savings#' ? (
 		<div className='radio-buttons'>
 			Checking
 			<Rbuttons params={{ rtype: 'checking', triggerChange: handleChange }} />
 			Savings
-			<Rbuttons params={{ rtype: 'saving', triggerChange: handleChange }} />
+			<Rbuttons params={{ rtype: 'savings', triggerChange: handleChange }} />
 		</div>
 	) : (
 		<div className='radio-buttons'>
 			Checking
 			<Rbuttons params={{ rtype: 'checking', triggerChange: handleChange }} />
 			Savings
-			<Rbuttons params={{ rtype: 'saving', triggerChange: handleChange }} />
+			<Rbuttons params={{ rtype: 'savings', triggerChange: handleChange }} />
 			Both
 			<Rbuttons params={{ rtype: 'both', triggerChange: handleChange }} />
 		</div>

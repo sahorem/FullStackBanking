@@ -9,6 +9,7 @@ const { getDBConnect, closeDBConnect } = require('./dbconnect.js');
 const request = supertest(app);
 const clientCount = 1;
 const clientList = [];
+const acctlist = ['checking', 'savings'];
 var server = null;
 
 //beforeAll(async () => {
@@ -69,15 +70,19 @@ describe('Bad Bank Backend - integration testing ', function () {
 		await flushPromises();
 		try {
 			for (let i = 0; i < clientCount; i++) {
-				const data = await request
-					.post('/client/create')
-					.send({ name: clientList[i].name, email: clientList[i].email });
-				if (utils.DEBUG) console.log('create client', data.body);
+				const data = await request.post('/client/create').send({
+					name: clientList[i].name,
+					email: clientList[i].email,
+					acttype: acctlist[i],
+				});
+				if (utils.DEBUG) console.log('created test client', data.body[0]);
+				const newclient = data.body[0];
 				expect(data.status).toBe(200);
-				expect(data.body.clientname).toBe(clientList[i].name);
-				expect(data.body.clientemail).toBe(clientList[i].email);
+				expect(newclient.clientname).toBe(clientList[i].name);
+				expect(newclient.clientemail).toBe(clientList[i].email);
+				expect(newclient.accounttype).toBe(acctlist[i]);
 				//Save the closing balance for later validation
-				clientList[i].closingbalance = data.body.closingbalance;
+				clientList[i].closingbalance = newclient.closingbalance;
 			}
 		} catch (e) {
 			if (utils.DEBUG) console.log('create client account - test error', e);
@@ -90,12 +95,15 @@ describe('Bad Bank Backend - integration testing ', function () {
 		await flushPromises();
 		try {
 			for (let i = 0; i < clientCount; i++) {
-				const data = await request.get(
-					`/client/findOne/${clientList[i].email}`
-				);
-				expect(data.status).toBe(200);
+				const data = await request.get(`/client/find/${clientList[i].email}`);
 				if (utils.DEBUG) console.log('status', data.status);
 				if (utils.DEBUG) console.log('status', data.body);
+
+				const newclient = data.body[0];
+				expect(data.status).toBe(200);
+				expect(newclient.clientname).toBe(clientList[i].name);
+				expect(newclient.clientemail).toBe(clientList[i].email);
+				expect(newclient.accounttype).toBe(acctlist[i]);
 			}
 		} catch (e) {
 			if (utils.DEBUG) console.log('verify client accounts - test error', e);
@@ -109,10 +117,22 @@ describe('Bad Bank Backend - integration testing ', function () {
 			for (let i = 0; i < clientCount; i++) {
 				//Let's first deposit amount
 				let amt = utils.getRandomIntInclusive(25, 75);
-				let data = await request
-					.post('/client/update')
-					.send({ email: clientList[i].email, amount: amt });
+				let data = await request.post('/client/update').send({
+					email: clientList[i].email,
+					acttype: acctlist[i],
+					amount: amt,
+				});
+				if (utils.DEBUG) console.log('Updated client', data.body.value);
+
 				let retClient = data.body.value;
+				if (utils.DEBUG)
+					console.log(
+						'Updated client',
+						retClient.closingbalance,
+						clientList[i].closingbalance,
+						amt
+					);
+
 				expect(data.status).toBe(200);
 				expect(retClient.clientname).toBe(clientList[i].name);
 				expect(retClient.clientemail).toBe(clientList[i].email);
@@ -124,9 +144,12 @@ describe('Bad Bank Backend - integration testing ', function () {
 
 				// Now withdraw amount
 				amt = -1 * utils.getRandomIntInclusive(25, 75);
-				data = await request
-					.post('/client/update')
-					.send({ email: clientList[i].email, amount: amt });
+				data = await request.post('/client/update').send({
+					email: clientList[i].email,
+					acttype: acctlist[i],
+					amount: amt,
+				});
+				if (utils.DEBUG) console.log('Updated client', data.body.value);
 				retClient = data.body.value;
 				expect(data.status).toBe(200);
 				expect(retClient.clientname).toBe(clientList[i].name);
@@ -136,7 +159,7 @@ describe('Bad Bank Backend - integration testing ', function () {
 				);
 			}
 		} catch (e) {
-			console.log('depost - withdraw amounts - test error', e);
+			console.log('deposit - withdraw amounts - test error', e);
 		}
 	});
 	if (utils.DEBUG) console.log(clientList);

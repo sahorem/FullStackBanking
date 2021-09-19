@@ -1,4 +1,3 @@
-const { AccountType } = require('../client/src/accounttype.js');
 const utils = require('./utils.js');
 
 // create client account

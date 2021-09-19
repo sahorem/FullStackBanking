@@ -4,6 +4,7 @@ const ctxValues = {
 	currentuser: {
 		name: '',
 		email: '',
+		acctlist: '',
 		accounts: [
 			{
 				accounttype: '',
@@ -23,16 +24,20 @@ function setUserContext(firebaseClientAuth, data) {
 		ctxValues.currentuser.name = data[0].clientname;
 		ctxValues.currentuser.email = data[0].clientemail;
 		ctxValues.currentuser.firebaseuser = firebaseClientAuth;
+		let acctlist = '';
 		for (let i = 0; i < data.length; i++) {
 			ctxValues.currentuser.accounts[i] = {
 				accounttype: data[i].accounttype,
 				openbalance: data[i].openingbalance,
 				closebalance: data[i].closingbalance,
 			};
+			acctlist = acctlist + data[i].accounttype + '#';
 		}
+		ctxValues.currentuser.acctlist = acctlist;
 	} else {
 		ctxValues.currentuser.name = data.clientname;
 		ctxValues.currentuser.email = data.clientemail;
+		ctxValues.currentuser.acctlist = data.accounttype + '#';
 		ctxValues.currentuser.firebaseuser = firebaseClientAuth;
 		ctxValues.currentuser.accounts[0] = {
 			accounttype: data.accounttype,

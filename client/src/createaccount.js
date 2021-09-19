@@ -18,7 +18,6 @@ function CreateAccount(props) {
 	const [email, setEmail] = React.useState('');
 	const [password, setPassword] = React.useState('');
 	const ctx = React.useContext(UserContext);
-	const MemoizedAccountType = React.memo(AccountType);
 
 	//if user is logged in, it persists through refreshes, this eliminates that issue
 	firebaseClientAuth.signOut();
@@ -105,7 +104,7 @@ function CreateAccount(props) {
 										data.openingbalance
 								);
 								console.log(ctx);
-								setUserContext(firebaseClientAuth, data);
+								setUserContext(firebaseClientAuth.currentUser, data);
 								/*
 								ctx.currentuser = {
 									name,
@@ -262,7 +261,7 @@ function CreateAccount(props) {
 						/>
 						<br />
 						<div className='acttype'>
-							<MemoizedAccountType params={params}></MemoizedAccountType>
+							<AccountType params={params}></AccountType>
 						</div>
 						<br />
 						<button

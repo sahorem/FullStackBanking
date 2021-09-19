@@ -81,8 +81,6 @@ app.get('/client/find/:email', function (req, res) {
 		.catch((err) => {
 			res.send({ error: 'client account not found' + err });
 		});
-
-	if (utils.DEBUG) console.log('exiting findone');
 });
 
 // all accounts
