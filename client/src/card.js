@@ -3,13 +3,17 @@ function Card(props) {
 		textAlign: 'center',
 		fontSize: '20px',
 	};
+	let wstyle = {
+		maxWidth: props.maxwidth || '25rem',
+	};
+
 	function classes() {
 		const bg = props.bgcolor ? ' bg-' + props.bgcolor : ' ';
 		const txt = props.txtcolor ? ' text-' + props.txtcolor : ' text-white';
 		return 'card mb-3 ' + bg + txt;
 	}
 	return (
-		<div className={classes()} style={{ maxWidth: '25rem' }}>
+		<div className={classes()} style={wstyle}>
 			<div className='card-header' style={divstyle}>
 				{props.header}
 			</div>

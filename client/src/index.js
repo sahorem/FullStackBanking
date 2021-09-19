@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Home } from './home.js';
+import { About } from './about.js';
 import { CreateAccount } from './createaccount.js';
 import { Money } from './money.js';
 import { AllClients } from './allclients.js';
@@ -58,6 +59,9 @@ function Spa() {
 							<LinkContainer to='/ClientSummary'>
 								<Nav.Link>ClientSummary</Nav.Link>
 							</LinkContainer>
+							<LinkContainer to='/About'>
+								<Nav.Link>About</Nav.Link>
+							</LinkContainer>
 							<LinkContainer
 								to={{
 									pathname: '/Logout',
@@ -75,6 +79,7 @@ function Spa() {
 					<Route exact path='/ClientSummary' component={ClientSummary}></Route>
 					<Route path='/Logout' component={Logout}></Route>
 					<Route path='/Home' component={Home}></Route>
+					<Route path='/About' component={About}></Route>
 					<Route exact path='/' component={Home}></Route>
 					<Route component={Home} />
 				</Switch>
@@ -104,6 +109,9 @@ function Spa() {
 								}}>
 								<Nav.Link>CreateAccount</Nav.Link>
 							</LinkContainer>
+							<LinkContainer to='/About'>
+								<Nav.Link>About</Nav.Link>
+							</LinkContainer>
 						</Nav>
 					</Navbar.Collapse>
 				</Navbar>
@@ -111,6 +119,7 @@ function Spa() {
 					<Route path='/Login' component={Login}></Route>
 					<Route path='/CreateAccount' component={CreateAccount}></Route>
 					<Route path='/Home' component={Home}></Route>
+					<Route path='/About' component={About}></Route>
 					<Route exact path='/' component={Home}></Route>
 					<Route component={Home} />
 				</Switch>

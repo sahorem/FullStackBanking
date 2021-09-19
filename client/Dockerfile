@@ -19,6 +19,6 @@ COPY ./public/*.* /usr/src/client/public
 
 #RUN npm install --production --silent && mv node_modules ../
 RUN npm install --production --silent
-COPY . .
+#COPY . .
 EXPOSE 3000
 CMD ["npm", "start"]

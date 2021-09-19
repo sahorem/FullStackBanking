@@ -14,6 +14,6 @@ COPY *.json /usr/src/server
 COPY *.js /usr/src/server
 #RUN npm install --production --silent && mv node_modules ../
 RUN npm install --production --silent
-COPY . .
+#COPY . .
 EXPOSE 4000
 CMD ["npm", "start"]

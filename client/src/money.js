@@ -93,7 +93,7 @@ function Money(props) {
 						});
 
 						let data = await res.json();
-						console.log(data);
+						//console.log(data);
 						if (data) {
 							if (data.error) {
 								setStatus('Account not updated :' + data.error);

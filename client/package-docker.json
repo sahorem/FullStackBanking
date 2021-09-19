@@ -50,7 +50,7 @@
     "@testing-library/user-event": "^12.8.3",
     "puppeteer": "^10.2.0"
   },
-  "proxy": "http://localhost:4000",
+  "proxy": "http://fullstackbanking_server_1:4000",
   "description": "Full Stack Banking React Client",
   "author": "Mahesh Sahore",
   "license": "MIT"

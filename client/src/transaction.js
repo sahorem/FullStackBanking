@@ -28,6 +28,9 @@ const Transaction = (props) => {
 		btntext = 'Deposit Amount';
 		txninfo = 'Enter Deposit Amount';
 	}
+	React.useEffect(() => {
+		clrForm();
+	}, [txninfo]);
 
 	const amtChange = (e) => {
 		if (e.currentTarget.value) {

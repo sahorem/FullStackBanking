@@ -2,6 +2,7 @@ import { Card } from './card.js';
 function Home() {
 	return (
 		<Card
+			style={{ textAlign: 'center' }}
 			txtcolor='black'
 			header='BadBank Landing Module'
 			title='Welcome to the bank'
