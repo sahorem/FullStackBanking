@@ -66,7 +66,7 @@ function Money(props) {
 			txnmsg = 'Amount has been withdrawn successfully, new closing balance: ';
 		}
 
-		const url = '/client/update/';
+		const url = '/client/transaction/';
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
 		if (ctx.currentuser.firebaseuser) {
@@ -86,7 +86,7 @@ function Money(props) {
 								Authorization: idToken,
 							},
 							body: JSON.stringify({
-								email: ctx.currentuser.email,
+								clientid: ctx.currentuser.id,
 								acttype: acttype,
 								amount: txnamt,
 							}),

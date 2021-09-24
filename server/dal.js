@@ -1,34 +1,19 @@
 const utils = require('./utils.js');
 
-// create client account
-function createClient(db, name, email, acttype) {
-	if (utils.DEBUG) console.log('in create client', name, email);
-	const openbalance = utils.getRandomIntInclusive(200, 1000);
-	const closebalance = openbalance;
+// find client accounts
+function clientFind(db, clientid) {
 	return new Promise((resolve, reject) => {
-		let actlist = acttype == 'both' ? ['checking', 'savings'] : [acttype];
-		let doclist = [];
-		for (let i = 0; i < actlist.length; i++) {
-			doclist[i] = {
-				clientname: name,
-				clientemail: email,
-				accounttype: actlist[i],
-				openingbalance: openbalance,
-				closingbalance: closebalance,
-			};
-		}
-
-		const collection = db.collection('clients');
-		if (doclist) {
-			collection.insert(doclist, { w: 1 }, function (err, result) {
-				err ? reject(err) : resolve(doclist);
+		const customers = db
+			.collection('clients')
+			.find({ clientid: clientid })
+			.toArray(function (err, docs) {
+				err ? reject(err) : resolve(docs);
 			});
-		}
 	});
 }
 
-// find client accounts
-function findClient(db, email) {
+// find client account by Email
+function clientFindEmail(db, email) {
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('clients')
@@ -40,24 +25,83 @@ function findClient(db, email) {
 }
 
 // find client account
-function findClientOne(db, email) {
-	if (utils.DEBUG) console.log('in findClientOne ', email);
+function clientFindOne(db, clientid) {
+	if (utils.DEBUG) console.log('in findClientOne ', clientid);
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('clients')
-			.findOne({ clientemail: email })
+			.findOne({ clientid: clientid })
 			.then((doc) => resolve(doc))
 			.catch((err) => reject(err));
 	});
 }
 
+// find client profile
+function clientFindProfile(db, clientid) {
+	if (utils.DEBUG) console.log('in findClientProfile ', clientid);
+	return new Promise((resolve, reject) => {
+		const customers = db
+			.collection('clientprofile')
+			.findOne({ clientid: clientid })
+			.then((doc) => resolve(doc))
+			.catch((err) => reject(err));
+	});
+}
+
+// create client account
+function clientCreate(db, name, email, acttype) {
+	if (utils.DEBUG) console.log('in create client', name, email);
+	const openbalance = utils.getRandomIntInclusive(200, 1000);
+	const closebalance = openbalance;
+	return new Promise((resolve, reject) => {
+		let actlist = acttype == 'both' ? ['checking', 'savings'] : [acttype];
+		let doclist = [];
+		let id = 0;
+		for (let i = 0; i < actlist.length; i++) {
+			// Generate the client id and check if it already exists
+			while (id === 0) {
+				id = utils.generateClientId(name);
+				clientFindOne(db, id)
+					.then((client) => {
+						// if client exists, regenerate client ID
+						if (client.length > 0) {
+							id = 0; // run the loop again to find unique id
+							if (utils.DEBUG) console.log('client ID already exists' + id);
+						} else {
+							// Found unique client ID
+							if (utils.DEBUG) console.log('generated client ID ' + id);
+						}
+					})
+					.catch((err) => {
+						console.log('generate client error ' + err);
+						//reject(err);
+					});
+			}
+			doclist[i] = {
+				clientid: id,
+				clientname: name,
+				clientemail: email,
+				accounttype: actlist[i],
+				openingbalance: openbalance,
+				closingbalance: closebalance,
+			};
+		}
+		const collection = db.collection('clients');
+		if (doclist) {
+			collection.insert(doclist, { w: 1 }, function (err, result) {
+				err ? reject(err) : resolve(doclist);
+			});
+		}
+	});
+}
+
 // update - deposit/withdraw amount
-function updateClient(db, email, acttype, amount) {
+function clientUpdate(db, clientid, acttype, amount) {
 	// First insert the record in transactions collection
 	(async () => {
 		const collection = db.collection('transactions');
 		const doc = {
-			clientemail: email,
+			clientid: clientid,
 			accounttype: acttype,
 			txndate: utils.getCurrentDT(),
 			txnamount: amount,
@@ -75,7 +119,7 @@ function updateClient(db, email, acttype, amount) {
 		const customers = db
 			.collection('clients')
 			.findOneAndUpdate(
-				{ clientemail: email, accounttype: acttype },
+				{ clientid: clientid, accounttype: acttype },
 				{ $inc: { closingbalance: amount } },
 				{ returnOriginal: false },
 				function (err, documents) {
@@ -86,8 +130,40 @@ function updateClient(db, email, acttype, amount) {
 	});
 }
 
+// Update Client Profile
+function clientProfileUpdate(
+	db,
+	clientid,
+	address1,
+	address2,
+	city,
+	state,
+	zipcode
+) {
+	// Now update the closing balance and return the updated amount
+	return new Promise((resolve, reject) => {
+		const customers = db.collection('clientprofile').update(
+			{ clientid: clientid },
+			{
+				clientid: clientid,
+				address1: address1,
+				address2: address2,
+				city: city,
+				state: state,
+				zipcode: zipcode,
+				upddt: utils.getCurrentDT(),
+			},
+			{ upsert: true, multi: false, returnOriginal: false },
+			function (err, documents) {
+				//console.log(documents);
+				err ? reject(err) : resolve(documents);
+			}
+		);
+	});
+}
+
 // all clients
-function allClients(db) {
+function clientAll(db) {
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('clients')
@@ -99,11 +175,11 @@ function allClients(db) {
 }
 
 // find transactions for a client
-function allClientTxn(db, email) {
+function clientTxnAll(db, clientid) {
 	return new Promise((resolve, reject) => {
 		const customers = db
 			.collection('transactions')
-			.find({ clientemail: email })
+			.find({ clientid: clientid })
 			.toArray(function (err, docs) {
 				err ? reject(err) : resolve(docs);
 			});
@@ -111,10 +187,13 @@ function allClientTxn(db, email) {
 }
 
 module.exports = {
-	createClient,
-	findClient,
-	findClientOne,
-	updateClient,
-	allClients,
-	allClientTxn,
+	clientCreate,
+	clientFind,
+	clientFindOne,
+	clientFindEmail,
+	clientFindProfile,
+	clientUpdate,
+	clientAll,
+	clientTxnAll,
+	clientProfileUpdate,
 };

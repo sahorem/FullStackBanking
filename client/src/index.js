@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Home } from './home.js';
-import { About } from './about.js';
+import { Login } from './login.js';
 import { CreateAccount } from './createaccount.js';
+import { Home } from './home.js';
 import { Money } from './money.js';
+import { UpdateProfile } from './updateprofile.js';
 import { AllClients } from './allclients.js';
 import { ClientSummary } from './clientsummary.js';
-import { Login } from './login.js';
+import { About } from './about.js';
 import { Logout } from './logout.js';
 import { UserContext, ctxValues } from './context.js';
 import { createBrowserHistory } from 'history';
@@ -53,6 +54,9 @@ function Spa() {
 								}}>
 								<Nav.Link>Withdraw</Nav.Link>
 							</LinkContainer>
+							<LinkContainer to='/UpdateProfile'>
+								<Nav.Link>UpdateProfile</Nav.Link>
+							</LinkContainer>
 							<LinkContainer to='/ClientList'>
 								<Nav.Link>ClientList</Nav.Link>
 							</LinkContainer>
@@ -75,6 +79,7 @@ function Spa() {
 				<Switch>
 					<Route path='/Deposit' component={Money}></Route>
 					<Route exact path='/Withdraw' component={Money}></Route>
+					<Route exact path='/UpdateProfile' component={UpdateProfile}></Route>
 					<Route exact path='/ClientList' component={AllClients}></Route>
 					<Route exact path='/ClientSummary' component={ClientSummary}></Route>
 					<Route path='/Logout' component={Logout}></Route>

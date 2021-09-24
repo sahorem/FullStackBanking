@@ -1,7 +1,7 @@
-var dal = require('./dal.js');
 var authservice = require('./auth_service.js');
 var express = require('express');
 var cors = require('cors');
+var routes = require('./routes.js');
 const utils = require('./utils.js');
 const { getDBConnect, closeDBConnect } = require('./dbconnect.js');
 
@@ -27,7 +27,7 @@ app.use(cors());
 		.catch((err) => console.log('DB connection Failure', err));
 })();
 
-// Verify the Authorization Token.
+// Add middleware to Verify the Authorization Token.
 
 app.use(async (req, res, next) => {
 	try {
@@ -58,113 +58,8 @@ app.use((req, res, next) => {
 	next();
 });
 
-// Root Route
-app.get('/', function (req, res) {
-	if (utils.DEBUG) console.log('root route');
-	res.status(200).json({ title: 'Badbank Service' });
-});
-
-// find client by email
-app.get('/client/find/:email', function (req, res) {
-	const { db, body } = req;
-	if (utils.DEBUG) console.log(req.params.email);
-	dal
-		.findClient(db, req.params.email)
-		.then((client) => {
-			if (utils.DEBUG) console.log('client', client);
-			if (client) {
-				res.send(client);
-			} else {
-				res.send({ error: ' client account not Found' });
-			}
-		})
-		.catch((err) => {
-			res.send({ error: 'client account not found' + err });
-		});
-});
-
-// all accounts
-app.get('/client/all', function (req, res) {
-	const { db, body } = req;
-	dal
-		.allClients(db)
-		.then((docs) => {
-			//console.log(docs);
-			if (docs) {
-				res.send(docs);
-			} else {
-				res.send({ error: 'client accounts not found' });
-			}
-		})
-		.catch((err) => {
-			res.send({ error: 'client accounts not found' + err });
-		});
-});
-
-// find client transactions
-app.get('/client/transactions/:email', function (req, res) {
-	const { db, body } = req;
-	if (utils.DEBUG) console.log('get transactions', req.params.email);
-
-	dal
-		.allClientTxn(db, req.params.email)
-		.then((txn) => {
-			if (utils.DEBUG) console.log(txn);
-			if (txn) {
-				res.send(txn);
-			} else {
-				res.send({ error: 'client transactions not found' });
-			}
-		})
-		.catch((err) => {
-			res.send({ error: 'client transactions not found ' + err });
-		});
-});
-
-// create client account
-app.post('/client/create', function (req, res) {
-	const { db, body } = req;
-	if (utils.DEBUG) console.log('client create', body.name);
-	if (utils.DEBUG) console.log('client create', body.email);
-	if (utils.DEBUG) console.log('client create', body.acttype);
-
-	// check if client exists
-	dal
-		.findClient(db, body.email)
-		.then((client) => {
-			// if client exists, return error message
-			if (client.length > 0) {
-				if (utils.DEBUG) console.log('client account already exists');
-				res.send({ error: 'client already exists' });
-			} else {
-				// else create client account
-				//console.log('Creating client');
-				dal
-					.createClient(db, body.name, body.email, body.acttype)
-					.then((client) => {
-						if (utils.DEBUG) console.log('client account created ', client);
-						res.send(client);
-					});
-			}
-		})
-		.catch((err) => {
-			res.send({ error: 'client account not created ' + err });
-		});
-});
-
-// update - deposit/withdraw amount
-app.post('/client/update/', function (req, res) {
-	const { db, body } = req;
-	dal
-		.updateClient(db, body.email, body.acttype, Number(body.amount))
-		.then((response) => {
-			if (utils.DEBUG) console.log('updated client record', response);
-			res.send(response);
-		})
-		.catch((err) => {
-			res.send({ error: 'client accounts not updated ' + err });
-		});
-});
+// Add routes to the server
+app.use(routes);
 
 //Final error handling
 app.use((err, req, res, next) => {

@@ -103,17 +103,7 @@ function CreateAccount(props) {
 									'Account Successfully Created with opening balance of ' +
 										data.openingbalance
 								);
-								console.log(ctx);
 								setUserContext(firebaseClientAuth.currentUser, data);
-								/*
-								ctx.currentuser = {
-									name,
-									email,
-									openbalance: data.openingbalance,
-									closebalance: data.closingbalance,
-								};
-								ctx.firebaseuser = firebaseClientAuth.currentUser; */
-								console.log(ctx);
 								props.location.toggleBar(true);
 								setShow(false);
 							}
@@ -126,7 +116,7 @@ function CreateAccount(props) {
 				})
 				.catch((err) => console.log('Token Error:', err));
 		} else {
-			console.log(
+			setStatus(
 				'There is currently no logged in user. Unable to call Auth Route.'
 			);
 		}
@@ -135,6 +125,9 @@ function CreateAccount(props) {
 	// Create email based account for firebase
 	function signupEmail() {
 		console.log(name, ',', email, ',', password);
+		setName(name.trim());
+		setEmail(email.trim());
+		setPassword(password.trim());
 
 		if (!validate(name, 'name')) return;
 		if (!validate(email, 'email')) return;

@@ -7,8 +7,8 @@ const supertest = require('supertest');
 const { getDBConnect, closeDBConnect } = require('./dbconnect.js');
 
 const request = supertest(app);
-const clientCount = 1;
-const clientList = [];
+const clientcount = 1;
+const clientlist = [];
 const acctlist = ['checking', 'savings'];
 var server = null;
 
@@ -35,8 +35,8 @@ function client() {
 }
 
 // create test clients
-for (let i = 0; i < clientCount; i++) {
-	clientList[i] = client();
+for (let i = 0; i < clientcount; i++) {
+	clientlist[i] = client();
 }
 
 // Now time to run tests
@@ -69,40 +69,43 @@ describe('Bad Bank Backend - integration testing ', function () {
 	it('create client accounts', async () => {
 		await flushPromises();
 		try {
-			for (let i = 0; i < clientCount; i++) {
+			for (let i = 0; i < clientcount; i++) {
 				const data = await request.post('/client/create').send({
-					name: clientList[i].name,
-					email: clientList[i].email,
+					name: clientlist[i].name,
+					email: clientlist[i].email,
 					acttype: acctlist[i],
 				});
 				if (utils.DEBUG) console.log('created test client', data.body[0]);
 				const newclient = data.body[0];
 				expect(data.status).toBe(200);
-				expect(newclient.clientname).toBe(clientList[i].name);
-				expect(newclient.clientemail).toBe(clientList[i].email);
+				expect(newclient.clientname).toBe(clientlist[i].name);
+				expect(newclient.clientemail).toBe(clientlist[i].email);
 				expect(newclient.accounttype).toBe(acctlist[i]);
 				//Save the closing balance for later validation
-				clientList[i].closingbalance = newclient.closingbalance;
+				clientlist[i].closingbalance = newclient.closingbalance;
+				clientlist[i].clientid = newclient.clientid;
 			}
 		} catch (e) {
 			if (utils.DEBUG) console.log('create client account - test error', e);
 		}
 	});
-	if (utils.DEBUG) console.log(clientList);
+	if (utils.DEBUG) console.log(clientlist);
 
 	//Verify Client Accounts
 	it('verify client accounts', async () => {
 		await flushPromises();
 		try {
-			for (let i = 0; i < clientCount; i++) {
-				const data = await request.get(`/client/find/${clientList[i].email}`);
+			for (let i = 0; i < clientcount; i++) {
+				const data = await request.get(
+					`/client/find/${clientlist[i].clientid}`
+				);
 				if (utils.DEBUG) console.log('status', data.status);
 				if (utils.DEBUG) console.log('status', data.body);
 
 				const newclient = data.body[0];
 				expect(data.status).toBe(200);
-				expect(newclient.clientname).toBe(clientList[i].name);
-				expect(newclient.clientemail).toBe(clientList[i].email);
+				expect(newclient.clientname).toBe(clientlist[i].name);
+				expect(newclient.clientemail).toBe(clientlist[i].email);
 				expect(newclient.accounttype).toBe(acctlist[i]);
 			}
 		} catch (e) {
@@ -114,11 +117,11 @@ describe('Bad Bank Backend - integration testing ', function () {
 	it('depost - withdraw amounts ', async () => {
 		await flushPromises();
 		try {
-			for (let i = 0; i < clientCount; i++) {
+			for (let i = 0; i < clientcount; i++) {
 				//Let's first deposit amount
 				let amt = utils.getRandomIntInclusive(25, 75);
 				let data = await request.post('/client/update').send({
-					email: clientList[i].email,
+					clientid: clientlist[i].clientid,
 					acttype: acctlist[i],
 					amount: amt,
 				});
@@ -129,40 +132,42 @@ describe('Bad Bank Backend - integration testing ', function () {
 					console.log(
 						'Updated client',
 						retClient.closingbalance,
-						clientList[i].closingbalance,
+						clientlist[i].closingbalance,
 						amt
 					);
 
 				expect(data.status).toBe(200);
-				expect(retClient.clientname).toBe(clientList[i].name);
-				expect(retClient.clientemail).toBe(clientList[i].email);
+				expect(retClient.clientid).toBe(clientlist[i].clientid);
+				expect(retClient.clientname).toBe(clientlist[i].name);
+				expect(retClient.clientemail).toBe(clientlist[i].email);
 				expect(retClient.closingbalance).toBe(
-					clientList[i].closingbalance + amt
+					clientlist[i].closingbalance + amt
 				);
 				//Save the closing balance for later validation
-				clientList[i].closingbalance = retClient.closingbalance;
+				clientlist[i].closingbalance = retClient.closingbalance;
 
 				// Now withdraw amount
 				amt = -1 * utils.getRandomIntInclusive(25, 75);
-				data = await request.post('/client/update').send({
-					email: clientList[i].email,
+				data = await request.post('/client/transaction').send({
+					clientid: clientlist[i].clientid,
 					acttype: acctlist[i],
 					amount: amt,
 				});
 				if (utils.DEBUG) console.log('Updated client', data.body.value);
 				retClient = data.body.value;
 				expect(data.status).toBe(200);
-				expect(retClient.clientname).toBe(clientList[i].name);
-				expect(retClient.clientemail).toBe(clientList[i].email);
+				expect(retClient.clientid).toBe(clientlist[i].clientid);
+				expect(retClient.clientname).toBe(clientlist[i].name);
+				expect(retClient.clientemail).toBe(clientlist[i].email);
 				expect(retClient.closingbalance).toBe(
-					clientList[i].closingbalance + amt
+					clientlist[i].closingbalance + amt
 				);
 			}
 		} catch (e) {
 			console.log('deposit - withdraw amounts - test error', e);
 		}
 	});
-	if (utils.DEBUG) console.log(clientList);
+	if (utils.DEBUG) console.log(clientlist);
 
 	afterAll((done) => {
 		// First close DB connections

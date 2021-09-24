@@ -2,8 +2,8 @@ import React from 'react';
 
 const ctxValues = {
 	currentuser: {
+		id: '',
 		name: '',
-		email: '',
 		acctlist: '',
 		accounts: [
 			{
@@ -21,8 +21,8 @@ const UserContext = React.createContext(ctxValues);
 function setUserContext(firebaseClientAuth, data) {
 	//Check if we got array (multiple accounts) or single object back (single account)
 	if (Array.isArray(data)) {
+		ctxValues.currentuser.id = data[0].clientid;
 		ctxValues.currentuser.name = data[0].clientname;
-		ctxValues.currentuser.email = data[0].clientemail;
 		ctxValues.currentuser.firebaseuser = firebaseClientAuth;
 		let acctlist = '';
 		for (let i = 0; i < data.length; i++) {
@@ -35,8 +35,8 @@ function setUserContext(firebaseClientAuth, data) {
 		}
 		ctxValues.currentuser.acctlist = acctlist;
 	} else {
+		ctxValues.currentuser.id = data.clientid;
 		ctxValues.currentuser.name = data.clientname;
-		ctxValues.currentuser.email = data.clientemail;
 		ctxValues.currentuser.acctlist = data.accounttype + '#';
 		ctxValues.currentuser.firebaseuser = firebaseClientAuth;
 		ctxValues.currentuser.accounts[0] = {

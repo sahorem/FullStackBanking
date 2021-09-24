@@ -1,4 +1,4 @@
-const DEBUG = process.env.DEBUG || false;
+const DEBUG = process.env.DEBUG || true;
 
 // function to generate random number for opening balance
 function getRandomIntInclusive(min, max) {
@@ -17,4 +17,15 @@ function getCurrentDT() {
 	return date + ' ' + time;
 }
 
-module.exports = { getCurrentDT, getRandomIntInclusive, DEBUG };
+// Generate Client ID
+function generateClientId(name) {
+	const clientid = name.substr(0, 1) + getRandomIntInclusive(1111111, 9999999);
+	return clientid;
+}
+
+module.exports = {
+	getCurrentDT,
+	getRandomIntInclusive,
+	generateClientId,
+	DEBUG,
+};

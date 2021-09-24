@@ -60,12 +60,12 @@ function AllClients() {
 	const { SearchBar } = Search;
 	const columns = [
 		{
-			dataField: 'clientname',
-			text: 'Name',
+			dataField: 'clientid',
+			text: 'Client ID',
 		},
 		{
-			dataField: 'clientemail',
-			text: 'Email',
+			dataField: 'clientname',
+			text: 'Name',
 		},
 		{
 			dataField: 'accounttype',
@@ -102,7 +102,7 @@ function AllClients() {
 				Load Data {status}
 			</button>
 			<PaginationListStandalone {...paginationProps} />
-			<ToolkitProvider keyField='name' columns={columns} data={data} search>
+			<ToolkitProvider keyField={'_id'} columns={columns} data={data} search>
 				{(toolkitprops) => (
 					<div>
 						<SearchBar {...toolkitprops.searchProps} />

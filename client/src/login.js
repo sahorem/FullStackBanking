@@ -30,7 +30,7 @@ function Login(props) {
 	}
 	// Get the client details from backend mongo db
 	function getClientInfo(email) {
-		const url = `/client/find/${email}`;
+		const url = `/client/findemail/${email}`;
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
 		if (firebaseClientAuth.currentUser) {
@@ -62,14 +62,7 @@ function Login(props) {
 							} else {
 								// now set the current context to point to the logged user
 								setUserContext(firebaseClientAuth.currentUser, data);
-								/*
-								ctx.currentuser = {
-									name: data.clientname,
-									email,
-									openbalance: data.openingbalance,
-									closebalance: data.closingbalance,
-								};
-								ctx.firebaseuser = firebaseClientAuth.currentUser; */
+
 								setStatus('Successfully Logged in');
 								setShow(false);
 								setTimeout(() => setStatus(''), 6000);
@@ -83,7 +76,7 @@ function Login(props) {
 				})
 				.catch((err) => console.log('Token Error:', err));
 		} else {
-			console.log(
+			setStatus(
 				'There is currently no logged in user. Unable to call Auth Route.'
 			);
 		}
@@ -91,6 +84,9 @@ function Login(props) {
 
 	// Function to loging using email and passowrd authenticated using firebase
 	function emailLogin() {
+		setEmail(email.trim());
+		setPassword(password.trim());
+
 		if (!validate(email, 'email')) return;
 		if (!validate(password, 'password')) return;
 

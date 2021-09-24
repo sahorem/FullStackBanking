@@ -14,7 +14,7 @@ function ClientSummary() {
 	const [data, setData] = React.useState([]);
 	const ctx = React.useContext(UserContext);
 	const [status, setStatus] = React.useState('');
-	const email = ctx.currentuser.email;
+	const id = ctx.currentuser.id;
 	const name = ctx.currentuser.name;
 	let [cobalance, ccbalance, sobalance, scbalance] = [0, 0, 0, 0];
 	for (let i = 0; i < ctx.currentuser.accounts.length; i++) {
@@ -29,7 +29,7 @@ function ClientSummary() {
 
 	const txnData = () => {
 		// fetch all accounts from API
-		const url = `/client/transactions/${email}`;
+		const url = `/client/transactions/${id}`;
 		// Leverage Access token for Authenticated Access i.e.
 		// Call server with a token
 		if (ctx.currentuser.firebaseuser) {
@@ -71,6 +71,10 @@ function ClientSummary() {
 	};
 	const { SearchBar } = Search;
 	const columns = [
+		{
+			dataField: 'clientid',
+			text: 'Client ID',
+		},
 		{
 			dataField: 'accounttype',
 			text: 'Account Type',
